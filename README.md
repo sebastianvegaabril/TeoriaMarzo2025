@@ -1,4 +1,4 @@
-# Posibles Soluciones de los Practicos 📝
+# Posibles Soluciones de los Practicos 💻
 
 Acá voy a ir subiendo posibles soluciones de los practicos que les vamos a ir mandando.
 
