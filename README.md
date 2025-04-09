@@ -8,4 +8,4 @@ Si tienen alguna duda, no duden en contactarme por **Teams**. 💬
 
 ## 📂 Contenido
 
-- [Práctico 1](https://github.com/sebastianvegaabril/TeoriaMarzo2025/tree/main/Practico0)
+- [Práctico 0](https://github.com/sebastianvegaabril/TeoriaMarzo2025/tree/main/Practico0)
