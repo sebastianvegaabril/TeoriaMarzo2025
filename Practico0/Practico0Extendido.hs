@@ -58,7 +58,6 @@ type M = [(X, V)]
 powerSet :: [a] -> [[a]]
 powerSet []     = [[]]
 powerSet (x:xs) = powerSet xs ++ map (x :) (powerSet xs) -- Explicacion de esta funcion: Lo voy a explicar con el ejemplo [1,2]
-
 --                                                                                      primero hago la potencia de 2, que da [[],[2]]
 --                                                                                      despues a cada uno de esos conjuntos le agrego el 1
 --                                                                                      y queda [[1], [1,2]]. Ahora le concateno esto a la
