@@ -17,6 +17,7 @@ import Prelude hiding (nub)
 
 -- Primero tenemos que extender el data para incluir el
 -- conjunto potencia y la igualdad de conjuntos.
+
 data E
   = Pot E
   | Equal E E
