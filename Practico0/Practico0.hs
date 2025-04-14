@@ -1,12 +1,11 @@
 module Practico0 where
 
-import Data.List (nub)
-import Prelude hiding (nub)
+import           Data.List (nub)
+import           Prelude   hiding (nub)
 
 --------------------------------------------------------
 -----------------------Sintaxis-------------------------
 --------------------------------------------------------
-
 data E
   = Var X
   | Empty
@@ -26,7 +25,6 @@ type Z = Int
 ---------------------------------------------------------
 -----------------------Semantica-------------------------
 ---------------------------------------------------------
-
 data V
   = C [Z]
   | B Bool
@@ -65,7 +63,7 @@ difference (x:xs) c2
   | otherwise = difference xs c2
 
 included :: [Int] -> [Int] -> Bool
-included [] c2 = True
+included [] c2     = True
 included (x:xs) c2 = (elem x c2) && (included xs c2)
 
 eval :: (M, E) -> (M, V)
@@ -102,7 +100,6 @@ eval (m, Asig x e) =
 ---------------------------------------------------------
 ----------------------Ejercicios-------------------------
 ---------------------------------------------------------
-
 conj1 :: E
 conj1 = Union (Union (Unit 1) (Unit 2)) (Unit 3)
 

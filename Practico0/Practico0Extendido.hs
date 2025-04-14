@@ -1,6 +1,6 @@
 module Main where
 
-import Data.List (intercalate, nub, sort)
+import           Data.List (intercalate, nub, sort)
 
 ----------------------------------------------------------------------------------------------------
 ---- Cambios necesarios para implementar la potencia de un conjunto y la igualdad de conjuntos -----
@@ -13,11 +13,10 @@ import Data.List (intercalate, nub, sort)
 ------------ La solucion tiene pretty printing para ver de una forma mas clara los tests -----------
 ----------------------------- mas abajo se explica como usarlo. ------------------------------------
 ----------------------------------------------------------------------------------------------------
-import Prelude hiding (nub)
+import           Prelude   hiding (nub)
 
 -- Primero tenemos que extender el data para incluir el
 -- conjunto potencia y la igualdad de conjuntos.
-
 data E
   = Pow E
   | Equal E E
@@ -45,7 +44,6 @@ type X = String
 -- conjuntos de conjuntos, y tambien conjuntos de enteros.
 -- Como mencione mas arriba, esta no es la unica solucion
 -- que existe, es una de las posibles.
-
 data V
   = Z [Int]
   | B Bool
@@ -57,29 +55,27 @@ type M = [(X, V)]
 -- Ahora debemos hacer las funciones auxiliares que
 -- nos permitan encontrar la potencia de un conjunto,
 -- y otra que compare los conjuntos.
-
 powerSet :: [a] -> [[a]]
-powerSet [] = [[]]
+powerSet []     = [[]]
 powerSet (x:xs) = powerSet xs ++ map (x :) (powerSet xs) -- Explicacion de esta funcion: Lo voy a explicar con el ejemplo [1,2]
+
 --                                                                                      primero hago la potencia de 2, que da [[],[2]]
 --                                                                                      despues a cada uno de esos conjuntos le agrego el 1
 --                                                                                      y queda [[1], [1,2]]. Ahora le concateno esto a la
 --                                                                                      que calcule al principio, dando por resultado
 --                                                                                      [[],[2],[1],[1,2]] que es el resultado esperado,
 --                                                                                      la potencia de [1,2].
-
 equal :: V -> V -> Bool
-equal (Z xs) (Z ys) = sort (nub xs) == sort (nub ys)
-equal (B b1) (B b2) = b1 == b2
+equal (Z xs) (Z ys)        = sort (nub xs) == sort (nub ys)
+equal (B b1) (B b2)        = b1 == b2
 equal (Conj vs) (Conj vs') = included vs vs' && included vs' vs -- Verifica que ambos conjuntos se incluyan mutuamente
-equal _ _ = False
+equal _ _                  = False
 
 -- Tambien debemos cambiar las auxiliares que
 -- ya teniamos para usar los nuevos valores
 -- que tenemos. Los que mas cambian son los
 -- comparan, porque ya no tenemos listas de enteros
 -- ahora tenemos listas de valores.
-
 lkup :: X -> M -> V
 lkup x [] = error "Variable no definida."
 lkup x ((x', v):m')
@@ -125,13 +121,12 @@ belongsConj x (v:vs)
 
 included :: [V] -> [V] -> Bool
 included (x:xs) c2 = belongsConj x c2 && included xs c2
-included _ v = True
+included _ v       = True
 
 -- Por ultimo, debemos extender el eval para que se
 -- puedan evaluar expresiones de potencia e igualdad.
 -- Y hacer los cambios necesarios en los casos
 -- que ya teniamos hechos para usar los nuevos valores.
-
 eval :: (M, E) -> (M, V)
 eval (m, Var x) = (m, lkup x m)
 eval (m, Empty) = (m, Conj [])
@@ -139,7 +134,7 @@ eval (m, Unit z) = (m, Conj [Z [z]])
 eval (m, Pow e) =
   case eval (m, e) of
     (m', Conj [Z xs]) -> (m', Conj (map Z (powerSet xs)))
-    (m', Conj vs) -> (m', Conj (map Conj (powerSet vs)))
+    (m', Conj vs)     -> (m', Conj (map Conj (powerSet vs)))
 eval (m, Union e1 e2) =
   case eval (m, e1) of
     (m', Conj c1) ->
@@ -177,7 +172,6 @@ eval (m, Equal e1 e2) =
 --------------------------------------------- Tests ------------------------------------------------
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
-
 -- Tests de Union
 testUnion1 :: (M, V)
 testUnion1 = eval ([], Union (Unit 1) (Unit 2))
@@ -307,9 +301,9 @@ testEqual7 =
 -------------------------------- ./Practico0Extendido <-Linux/Mac ----------------------------------
 ----------------------------------------------------------------------------------------------------
 prettyPrint :: V -> String
-prettyPrint (Z []) = "{}"
-prettyPrint (Z xs) = intercalate ", " (map show xs)
-prettyPrint (B b) = show b
+prettyPrint (Z [])    = "{}"
+prettyPrint (Z xs)    = intercalate ", " (map show xs)
+prettyPrint (B b)     = show b
 prettyPrint (Conj vs) = "{" ++ intercalate ", " (map prettyPrint vs) ++ "}"
 
 prettyPrintResult :: (M, V) -> String
