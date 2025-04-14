@@ -1,45 +1,50 @@
 module Practico0 where
 
-import Prelude hiding (nub)
 import Data.List (nub)
+import Prelude hiding (nub)
 
 --------------------------------------------------------
 -----------------------Sintaxis-------------------------
 --------------------------------------------------------
 
-data E = 
-        Var X
-    |   Empty
-    |   Unit Z
-    |   Pert Z E
-    |   Union E E
-    |   Inter E E
-    |   Diff E E
-    |   Incl E E
-    |   Asig X E deriving Show
+data E
+  = Var X
+  | Empty
+  | Unit Z
+  | Pert Z E
+  | Union E E
+  | Inter E E
+  | Diff E E
+  | Incl E E
+  | Asig X E
+  deriving (Show)
 
 type X = String
+
 type Z = Int
 
 ---------------------------------------------------------
 -----------------------Semantica-------------------------
 ---------------------------------------------------------
 
-data V = C [Z] | B Bool deriving Show
+data V
+  = C [Z]
+  | B Bool
+  deriving (Show)
 
-type M = [(X,V)]
+type M = [(X, V)]
 
 lkup :: X -> M -> V
 lkup x [] = error "Variable no definida."
-lkup x ((x',v):m')
-    | x == x' = v
-    | otherwise = lkup x m'
+lkup x ((x', v):m')
+  | x == x' = v
+  | otherwise = lkup x m'
 
-upd :: M -> (X,V) -> M
+upd :: M -> (X, V) -> M
 upd [] xv = [xv]
-upd (xv@(x,v):m') xv'@(x',v')
-    | x == x' = xv':m'
-    | otherwise = xv:(upd m' xv')
+upd (xv@(x, v):m') xv'@(x', v')
+  | x == x' = xv' : m'
+  | otherwise = xv : (upd m' xv')
 
 belongs :: Int -> [Int] -> Bool
 belongs x c = elem x c
@@ -50,49 +55,49 @@ union c1 c2 = nub (c1 ++ c2)
 intersection :: [Int] -> [Int] -> [Int]
 intersection [] c2 = []
 intersection (x:xs) c2
-    | elem x c2 = x:(intersection xs c2)
-    | otherwise = intersection xs c2
+  | elem x c2 = x : (intersection xs c2)
+  | otherwise = intersection xs c2
 
 difference :: [Int] -> [Int] -> [Int]
 difference [] c2 = []
 difference (x:xs) c2
-    | not (elem x c2) = x:(difference xs c2)
-    | otherwise = difference xs c2
+  | not (elem x c2) = x : (difference xs c2)
+  | otherwise = difference xs c2
 
 included :: [Int] -> [Int] -> Bool
 included [] c2 = True
 included (x:xs) c2 = (elem x c2) && (included xs c2)
 
-eval :: (M,E) -> (M,V)
+eval :: (M, E) -> (M, V)
 eval (m, Var x) = (m, lkup x m)
 eval (m, Empty) = (m, C [])
-eval (m, Unit z) = (m,C [z])
-eval (m, Pert z e) = case eval (m,e) of {
-        (m', C c) -> (m', B (belongs z c))
-    }
-eval (m, Union e1 e2) = case eval (m,e1) of {
-    (m', C c1) -> case eval (m',e2) of{
+eval (m, Unit z) = (m, C [z])
+eval (m, Pert z e) =
+  case eval (m, e) of
+    (m', C c) -> (m', B (belongs z c))
+eval (m, Union e1 e2) =
+  case eval (m, e1) of
+    (m', C c1) ->
+      case eval (m', e2) of
         (m'', C c2) -> (m'', C (union c1 c2))
-    }
-}
-eval (m, Inter e1 e2) = case eval (m,e1) of {
-    (m', C c1) -> case eval (m',e2) of{
+eval (m, Inter e1 e2) =
+  case eval (m, e1) of
+    (m', C c1) ->
+      case eval (m', e2) of
         (m'', C c2) -> (m'', C (intersection c1 c2))
-    }
-}
-eval (m, Diff e1 e2) = case eval (m,e1) of {
-    (m', C c1) -> case eval (m',e2) of {
+eval (m, Diff e1 e2) =
+  case eval (m, e1) of
+    (m', C c1) ->
+      case eval (m', e2) of
         (m'', C c2) -> (m'', C (difference c1 c2))
-    }
-}
-eval (m, Incl e1 e2) =  case eval (m,e1) of {
-    (m', C c1) -> case eval (m',e2) of {
+eval (m, Incl e1 e2) =
+  case eval (m, e1) of
+    (m', C c1) ->
+      case eval (m', e2) of
         (m'', C c2) -> (m'', B (included c1 c2))
-    }
-}
-eval (m, Asig x e) =  case eval (m,e) of {
-    (m', v) -> (upd m' (x,v), v)
-}
+eval (m, Asig x e) =
+  case eval (m, e) of
+    (m', v) -> (upd m' (x, v), v)
 
 ---------------------------------------------------------
 ----------------------Ejercicios-------------------------
