@@ -19,7 +19,7 @@ import Prelude hiding (nub)
 -- conjunto potencia y la igualdad de conjuntos.
 
 data E
-  = Pot E
+  = Pow E
   | Equal E E
   | Var X
   | Empty
@@ -36,8 +36,8 @@ type X = String
 
 -- Hay que extender los valores tambien, porque ahora
 -- nos vamos a encontrar los conjuntos de conjuntos
--- como retorno de Pot.
--- Hay que tener en cuenta que Pot no solo es la potencia
+-- como retorno de Pow.
+-- Hay que tener en cuenta que Pow no solo es la potencia
 -- de un conjunto de entero. Puede haber potencia
 -- de potencia de potencia de un conjunto de enteros, por
 -- ejemplo. Entonces se me ocurrio esta idea, separar
@@ -58,9 +58,9 @@ type M = [(X, V)]
 -- nos permitan encontrar la potencia de un conjunto,
 -- y otra que compare los conjuntos.
 
-potencia :: [a] -> [[a]]
-potencia [] = [[]]
-potencia (x:xs) = potencia xs ++ map (x :) (potencia xs) -- Explicacion de esta funcion: Lo voy a explicar con el ejemplo [1,2]
+powerSet :: [a] -> [[a]]
+powerSet [] = [[]]
+powerSet (x:xs) = powerSet xs ++ map (x :) (powerSet xs) -- Explicacion de esta funcion: Lo voy a explicar con el ejemplo [1,2]
 --                                                                                      primero hago la potencia de 2, que da [[],[2]]
 --                                                                                      despues a cada uno de esos conjuntos le agrego el 1
 --                                                                                      y queda [[1], [1,2]]. Ahora le concateno esto a la
@@ -136,10 +136,10 @@ eval :: (M, E) -> (M, V)
 eval (m, Var x) = (m, lkup x m)
 eval (m, Empty) = (m, Conj [])
 eval (m, Unit z) = (m, Conj [Z [z]])
-eval (m, Pot e) =
+eval (m, Pow e) =
   case eval (m, e) of
-    (m', Conj [Z xs]) -> (m', Conj (map Z (potencia xs)))
-    (m', Conj vs) -> (m', Conj (map Conj (potencia vs)))
+    (m', Conj [Z xs]) -> (m', Conj (map Z (powerSet xs)))
+    (m', Conj vs) -> (m', Conj (map Conj (powerSet vs)))
 eval (m, Union e1 e2) =
   case eval (m, e1) of
     (m', Conj c1) ->
@@ -194,21 +194,21 @@ testUnion4 = eval ([], Union Empty (Unit 1))
 testUnion5 :: (M, V)
 testUnion5 = eval ([], Union Empty Empty)
 
--- Tests de Pot
+-- Tests de Pow
 testPot1 :: (M, V)
-testPot1 = eval ([], Pot (Unit 1))
+testPot1 = eval ([], Pow (Unit 1))
 
 testPot2 :: (M, V)
-testPot2 = eval ([], Pot (Union (Unit 1) (Unit 2)))
+testPot2 = eval ([], Pow (Union (Unit 1) (Unit 2)))
 
 testPot3 :: (M, V)
-testPot3 = eval ([], Pot (Union (Unit 1) (Union (Unit 2) (Unit 3))))
+testPot3 = eval ([], Pow (Union (Unit 1) (Union (Unit 2) (Unit 3))))
 
 testPot4 :: (M, V)
-testPot4 = eval ([], Pot (Pot (Unit 1)))
+testPot4 = eval ([], Pow (Pow (Unit 1)))
 
 testPot5 :: (M, V)
-testPot5 = eval ([], Pot (Pot (Union (Unit 1) (Unit 2))))
+testPot5 = eval ([], Pow (Pow (Union (Unit 1) (Unit 2))))
 
 -- Tests de Pert
 testPert1 :: (M, V)
@@ -323,7 +323,7 @@ main = do
   putStrLn $ "Union de {1, 2} y {3}: " ++ prettyPrintResult testUnion3
   putStrLn $ "Union de {} y {1}: " ++ prettyPrintResult testUnion4
   putStrLn $ "Union de {} y {}: " ++ prettyPrintResult testUnion5
-  putStrLn "\nTests de Pot:"
+  putStrLn "\nTests de Pow:"
   putStrLn $ "Potencia de {1}: " ++ prettyPrintResult testPot1
   putStrLn $ "Potencia de {1, 2}: " ++ prettyPrintResult testPot2
   putStrLn $ "Potencia de {1, 2, 3}: " ++ prettyPrintResult testPot3
